@@ -1,0 +1,20 @@
+{
+  "name": "assignment",
+  "version": "1.0.0",
+  "description": "304 Assignment",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ayesha Arshad",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.25.0",
+    "calculate-correlation": "^1.2.2",
+    "config": "^3.3.7",
+    "express": "^4.17.2",
+    "mathjs": "^10.1.1",
+    "sentiment": "^5.0.2",
+    "twit": "^2.2.11"
+  }
+}
