@@ -1,15 +1,17 @@
 const axios = require('axios');
-const math  = require('mathjs');
 global.apyCoins = new Array();
 
-
+//neutrino endpoint url
 const neutrinoURL = `https://dev.pywaves.org/neutrino/json`;
 
+//calling method on app start to get neutrino coin
 getCoins();
 
 
 
-
+//end point to get rate of specific coin
+//return json in format
+//  {"currentRate":[CURRENT_RATE]}
 module.exports.getRate = async function(req, res) {
     var coin = req.param("coin");
     var currentRate =0;
@@ -25,6 +27,10 @@ module.exports.getRate = async function(req, res) {
     });
 }
 
+
+//get rate of all neutrino coins
+//return json
+//format {"rates":[{"name":"eth","currentRate":12.16},{"name":"rubn","currentRate":5.65},.... ]}
 module.exports.getRates = async function(req, res) {
     var ratesJson = {rates : [] };
     try {
@@ -40,6 +46,11 @@ module.exports.getRates = async function(req, res) {
     res.json(ratesJson);
 }
 
+
+//endpoint to calculate profit 
+// required:  amount, coin and period
+//return json
+// format: {"profit":[PROFIT_AMOUNT]}
 module.exports.getProfit = async function(req, res) {
     var coin = req.param("coin");
     var amount = parseInt(req.param("amount"));
@@ -49,6 +60,9 @@ module.exports.getProfit = async function(req, res) {
         const response = await axios.get(neutrinoURL);
         var dataJson = response.data;
         var currentRate = dataJson[coin+"-apy"]['last'];
+        
+        //formula of profit is rate*amount*time
+        //total amount after profit = profit+ initiale price
         profit = ((currentRate/100) * amount * (period/365)) + amount ; 
     } catch (err) {
         console.error(err);
@@ -58,7 +72,7 @@ module.exports.getProfit = async function(req, res) {
     });
 }
 
-
+//getting the neutrino coins
 async function getCoins(){
     try {
         const response = await axios.get(neutrinoURL);
