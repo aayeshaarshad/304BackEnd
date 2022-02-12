@@ -1,7 +1,10 @@
 const axios = require('axios');
 const math  = require('mathjs');
 
-
+// end point to calculate simple moving average
+// parametes required : vs coin and period
+// return json
+// format : {"SMA": [SMA_VALUE]}
 module.exports.calculateSMA = async function(req, res) {
     var vs = req.param("vs");
     var period = req.param("period");
@@ -18,7 +21,10 @@ module.exports.calculateSMA = async function(req, res) {
     });
 }
 
-
+// end point to calculate exponential moving average
+// parametes required : vs coin and period
+// return json
+// format : {"EMA": [EMA_VALUE]}
 module.exports.calculateEMA = async function(req, res) {
     var vs = req.param("vs");
     var period = req.param("period");
@@ -35,7 +41,10 @@ module.exports.calculateEMA = async function(req, res) {
     });
 }
 
-
+// end point to calculate weighted moving average
+// parametes required : vs coin and period
+// return json
+// format : {"WMA": [WMA_VALUE]}
 module.exports.calculateWMA = async function(req, res) {
     var vs = req.param("vs");
     var period = req.param("period");
@@ -53,6 +62,10 @@ module.exports.calculateWMA = async function(req, res) {
 
 }
 
+// end point to calculate simple, exponential and weighted moving average
+// parametes required : vs coin and period
+// return json
+// format : {"SMA":[SMA_VALUE],"EMA":[EMA_VALUE],"WMA":[WMA_VALUE]}
 module.exports.calculateAll = async function(req, res) {
     var vs = req.param("vs");
     var period = req.param("period");
@@ -74,6 +87,10 @@ module.exports.calculateAll = async function(req, res) {
 
 }
 
+// end point to calculate sharpee ratio
+// parametes required : vs coin, period and risk free rate
+// return json
+// format : {"SR":[SR_VALUE]}
 module.exports.calculateSharpeeRatio = async function(req, res) {
     var vs = req.param("vs");
     var period = req.param("period");
@@ -91,6 +108,9 @@ module.exports.calculateSharpeeRatio = async function(req, res) {
     });
 }
 
+
+//helping function to calculate WMA
+//formula: Sum of weight*price divide by sum of weights
 function computeWMA(data, vs){
     var length = 0, sum = 0;
     var weight = 0;
@@ -110,6 +130,8 @@ function computeWMA(data, vs){
     return  sum/weight;
 }
 
+//helping function to calculate SMA
+//formula: Sum of prices / total number of prices 
 function computeSMA(data, vs){
     var length = 0, sum = 0;
     if(isWaveCurrency(vs)){
@@ -126,6 +148,10 @@ function computeSMA(data, vs){
     return sum/length;
 }
 
+
+//helping function to calculate EMA
+//first calculate soothing factor - formula: 2 / (length +1)
+//formula of EMA: (soothingFactor * currentPrice) + ((1-soothingFactor) * last EMA)
 function computeEMA(data, vs){
     var length = 0,  EMA=0;
     if(isWaveCurrency(vs)){
@@ -146,6 +172,9 @@ function computeEMA(data, vs){
     return EMA;
 }
 
+
+//helping function to calculate SR
+//formula : (roi - rfr)/sd
 function computeSR(data, vs, rfr){
     var length = 0;
     var sr=0;
@@ -153,10 +182,8 @@ function computeSR(data, vs, rfr){
     if(isWaveCurrency(vs)){
         length = data['data'].length;
         for(var i=1; i<length; i++){
-            // arr[i] = data['data'][i]['data']['weightedAveragePrice'] ;
             arr[i-1] = ((data['data'][i]['data']['weightedAveragePrice']  / data['data'][i-1]['data']['weightedAveragePrice'] ) -1 ) * 100 ;
         }
-        // roi = ((arr[length-1] - arr[0] )/arr[0]); 
     }else{
         length = data['prices'].length;
         for(var i=1; i<length; i++){
@@ -169,6 +196,7 @@ function computeSR(data, vs, rfr){
     return sr;
 }
 
+//reading the data from two apis coingecko and wavescap
 function getURL(vs, period){
     var url;
     if(!isWaveCurrency(vs)){
@@ -181,6 +209,8 @@ function getURL(vs, period){
 
 }
 
+
+//converting the period in days
 function getDays(period){
     var days = 1;
     const first = parseInt(period.charAt(0));
@@ -196,6 +226,7 @@ function getDays(period){
     return days;
 }
 
+//util fucntion
 function isWaveCurrency(vs){
     if(vs == "usd" || vs == "eur" || vs== "jpy" || vs == "ltc"
     ||  vs == "btc" ||  vs == "eth")
