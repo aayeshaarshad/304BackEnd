@@ -1,8 +1,10 @@
 const axios = require('axios');
 global.coinIDNameMap = new Map();
+
+
 initializeCoins();
 
-
+//getting the coin name against its asset id
 async function initializeCoins (){
     const response =  await axios.get(`https://wavescap.com/api/assets.json`);
     const data = response.data;
@@ -11,7 +13,10 @@ async function initializeCoins (){
     }
 }
 
-
+//end point to get market price of waves
+//response json
+//format
+//{"marketPrice":[{"price_asset_id":"6XtHjpXbs9RRJP2Sr9GUyVqzACcby9TkThHXnjVC5CDJ","vs":"USD Coin","lastPrice":9.6139759057785,"volume":431.29206126},...}]}
 module.exports.getMarkets = async function(req, res) {
     try {
         const response = await axios.get(
@@ -29,7 +34,8 @@ module.exports.getMarkets = async function(req, res) {
     
 }
 
-
+//endpoint get Currencies on which we will do process - SMA, EMA, WMA, SR
+//return json
 module.exports.getCurrencies = async function(req, res) {
     res.json({"coins":[
         {"price_asset_id":"usd","name":"USD"},
@@ -53,6 +59,8 @@ module.exports.getCurrencies = async function(req, res) {
         ]});
 }
 
+
+//getting the required data from api call
 async function parseMarketResponse(data){
     var marketJson = {marketPrice : [] };
     for(var i=0; i<data.length; i++){
